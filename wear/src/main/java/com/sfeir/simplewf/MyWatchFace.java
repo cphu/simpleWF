@@ -19,8 +19,13 @@ import android.support.v7.graphics.Palette;
 import android.support.wearable.watchface.CanvasWatchFaceService;
 import android.support.wearable.watchface.WatchFaceService;
 import android.support.wearable.watchface.WatchFaceStyle;
+import android.util.Log;
 import android.view.SurfaceHolder;
 import android.widget.Toast;
+
+import com.sfeir.simplewf.fit.FitData;
+import com.sfeir.simplewf.fit.FitService;
+import com.sfeir.simplewf.fit.FitServiceImpl;
 
 import java.lang.ref.WeakReference;
 import java.util.Calendar;
@@ -116,6 +121,8 @@ public class MyWatchFace extends CanvasWatchFaceService {
         private boolean mAmbient;
         private boolean mLowBitAmbient;
         private boolean mBurnInProtection;
+
+        private FitService fitService = new FitServiceImpl();
 
         @Override
         public void onCreate(SurfaceHolder holder) {
@@ -311,7 +318,7 @@ public class MyWatchFace extends CanvasWatchFaceService {
             colorMatrix.setSaturation(0);
             ColorMatrixColorFilter filter = new ColorMatrixColorFilter(colorMatrix);
             grayPaint.setColorFilter(filter);
-            canvas.drawBitmap(mBackgroundBitmap, 0, 0, grayPaint);
+//            canvas.drawBitmap(mBackgroundBitmap, 0, 0, grayPaint);
         }
 
         /**
@@ -329,8 +336,28 @@ public class MyWatchFace extends CanvasWatchFaceService {
                     break;
                 case TAP_TYPE_TAP:
                     // The user has completed the tap gesture.
-                    // TODO: Add code to handle the tap gesture.
-                    Toast.makeText(getApplicationContext(), R.string.message, Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(getApplicationContext(), R.string.message, Toast.LENGTH_SHORT).show();
+                    fitService.requestDailyTotal(MyWatchFace.this, new FitService.Handler<FitData>() {
+                        @Override
+                        public void onResults(FitData data) {
+                            int nbSteps = 0;
+                            if (data != null) {
+                                nbSteps = (int) data.getSteps();
+                            }
+                            Toast.makeText(getApplicationContext(), "Steps: " + nbSteps, Toast.LENGTH_SHORT).show();
+                        }
+
+                        @Override
+                        public void onError(Exception e) {
+                            Log.e("MyWF", "Fit service on error: " + e);
+                        }
+
+                        @Override
+                        public void onConnectionError(String msgError) {
+                            Log.e("MyWF", "Fit service on error: " + msgError);
+                            Toast.makeText(getApplicationContext(), "Error: " + msgError, Toast.LENGTH_SHORT).show();
+                        }
+                    });
                     break;
             }
             invalidate();
@@ -350,9 +377,11 @@ public class MyWatchFace extends CanvasWatchFaceService {
             if (mAmbient && (mLowBitAmbient || mBurnInProtection)) {
                 canvas.drawColor(Color.BLACK);
             } else if (mAmbient) {
-                canvas.drawBitmap(mGrayBackgroundBitmap, 0, 0, mBackgroundPaint);
+                canvas.drawColor(Color.BLACK);
+//                canvas.drawBitmap(mGrayBackgroundBitmap, 0, 0, mBackgroundPaint);
             } else {
-                canvas.drawBitmap(mBackgroundBitmap, 0, 0, mBackgroundPaint);
+                canvas.drawColor(Color.BLACK);
+//                canvas.drawBitmap(mBackgroundBitmap, 0, 0, mBackgroundPaint);
             }
         }
 

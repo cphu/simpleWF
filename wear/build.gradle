@@ -16,15 +16,24 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+    buildToolsVersion '28.0.3'
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    //    implementation "androidx.wear:wear:1.0.0"
     implementation 'com.google.android.support:wearable:2.4.0'
     implementation 'com.google.android.gms:play-services-wearable:16.0.1'
     implementation 'com.android.support:percent:28.0.0'
     implementation 'com.android.support:support-v4:28.0.0'
     implementation 'com.android.support:recyclerview-v7:28.0.0'
     implementation 'com.android.support:palette-v7:28.0.0'
+    // Fit
+    implementation 'com.google.android.gms:play-services-fitness:16.0.1'
+    implementation 'com.google.android.gms:play-services-auth:16.0.1'
     compileOnly 'com.google.android.wearable:wearable:2.4.0'
 }
